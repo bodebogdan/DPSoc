@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 
 
 int done=0; 
@@ -73,6 +74,7 @@ int main()
 
     if(result == -1)
     {
+	printf("%s", strerror(errno));
         perror("\nConnection failed, try again.\n");
         exit(1);
     }
