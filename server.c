@@ -18,6 +18,9 @@ void error(const char *msg)
     exit(1);
 }
 
+int connectionIndex = 0;
+int connections[10];
+
 int main(int argc, char *argv[])
 {
     int sockfd, newsockfd, portno, newsockfd2;
@@ -25,14 +28,18 @@ int main(int argc, char *argv[])
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
-
     int pid;
 
     if (argc < 2)
     {
-        fprintf(stderr,"ERROR, no port provided\n");
+        fprintf(stderr,"You need to provide a port!\n");
         exit(1);
     }
+
+    //connectionNumber = atoi(argv[2]);
+    //connections[] = malloc(sizeof(int) * connectionNumber);
+
+
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
         error("ERROR opening socket");
@@ -44,7 +51,7 @@ int main(int argc, char *argv[])
     if (bind(sockfd, (struct sockaddr *) &serv_addr,
              sizeof(serv_addr)) < 0)
         error("ERROR on binding");
-    listen(sockfd,5);
+    listen(sockfd,10);
     clilen = sizeof(cli_addr);
 
     pthread_t thread_id;
@@ -71,14 +78,26 @@ int main(int argc, char *argv[])
 void *connection_handler(void *socket_desc)
 {
     int sock = *(int*)socket_desc;
+    connections[connectionIndex++] = sock;
+
     int read_size;
     char *message, client_message[2000];
     int n;
+    int counter;
 
     while ( (read_size = recv(sock, client_message, 2000, 0)) > 0)
     {
-        n = write(sock,"I got your message",18);
-        if (n < 0) error("ERROR writing to socket");
+        for (counter = 0; counter < connectionIndex; counter++)
+        {
+            if (connections[counter] != sock)
+            {
+		printf("%s", client_message);
+                n = write(connections[counter], client_message, strlen(client_message));
+                if (n < 0) error("ERROR writing to socket");
+            }
+        }
+       // n = write(sock,"I got your message",18);
+        //if (n < 0) error("ERROR writing to socket");
     }
 
     if(read_size == 0)
@@ -91,5 +110,3 @@ void *connection_handler(void *socket_desc)
         perror("Read failed");
     }
 }
-
-
