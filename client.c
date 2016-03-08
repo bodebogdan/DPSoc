@@ -38,6 +38,15 @@ int main()
     char name[20];
     scanf("%s",name);
 
+    char pwd[10];
+    printf("\n Enter your password: ");
+    scanf("%s", pwd);
+
+    if (strcmp(pwd, "123") != 0)
+    {
+        printf("\n Password is not good! try again \n");
+        exit(1);
+    }
     // save old terminal settings
     struct termios oldt, newt;
     tcgetattr ( 0, &oldt );
