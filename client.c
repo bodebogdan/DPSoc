@@ -12,7 +12,7 @@
 #include <errno.h>
 
 
-int done=0; 
+int done=0;
 
 //char name[20];
 
@@ -22,7 +22,7 @@ WINDOW *bottom;
 int line=1; // Line position of top
 int input=1; // Line position of top
 int maxx,maxy; // Screen dimensions
-pthread_mutex_t mutexsum = PTHREAD_MUTEX_INITIALIZER;  
+pthread_mutex_t mutexsum = PTHREAD_MUTEX_INITIALIZER;
 
 void *get_in_addr(struct sockaddr *sa);
 
@@ -48,10 +48,10 @@ int main()
     tcsetattr ( 0, TCSANOW, &newt );
 
 
-   
 
-    
-    //      Build connection     
+
+
+    //      Build connection
     int len;
     int result;
     char buf[256];
@@ -84,9 +84,9 @@ int main()
     }
 
 
-    //    Begin chat windows   
-    // Set up windows  
-    initscr();  
+    //    Begin chat windows
+    // Set up windows
+    initscr();
     getmaxyx(stdscr,maxy,maxx);
 
     top = newwin(maxy/2,maxx,0,0);
@@ -152,8 +152,8 @@ void *sendmessage(void *name)
 
         // Build the message: "name: message"
         strcpy(msg,name);
-        strncat(msg,": \0",100-strlen(str));
-        strncat(msg,str,100-strlen(str));
+        strncat(msg,": \0",6); //100-strlen(str)
+        strncat(msg,str,strlen(str)); //100-strlen(str)
 
         // Check for quiting
         if(strcmp(str,"exit")==0)
@@ -162,11 +162,11 @@ void *sendmessage(void *name)
             done = 1;
 
             // Clean up
-            endwin();      
+            endwin();
             pthread_mutex_destroy(&mutexsum);
             pthread_exit(NULL);
             close(sockfd);
-        }    
+        }
 
         // Send message to server
         write(sockfd,msg,strlen(msg));
@@ -217,7 +217,6 @@ void *listener()
         pthread_mutex_lock (&mutexsum);
         if(line!=maxy/2-2)
             line++;
-        else
             scroll(top);
         pthread_mutex_unlock (&mutexsum);
     }

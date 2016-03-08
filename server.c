@@ -85,16 +85,27 @@ void *connection_handler(void *socket_desc)
     int n;
     int counter;
 
+    //char *processed;
+
     while ( (read_size = recv(sock, client_message, 2000, 0)) > 0)
     {
         for (counter = 0; counter < connectionIndex; counter++)
         {
             if (connections[counter] != sock)
             {
-		printf("%s", client_message);
+                //processed = (char*)malloc(sizeof(char) * strlen(client_message));
+                //strcpy(processed, client_message);
+
+                printf("%s", client_message);
                 n = write(connections[counter], client_message, strlen(client_message));
                 if (n < 0) error("ERROR writing to socket");
             }
+        }
+
+
+        for (counter = 0 ; counter < 2000; counter++)
+        {
+            client_message[counter] = '\0';
         }
        // n = write(sock,"I got your message",18);
         //if (n < 0) error("ERROR writing to socket");
