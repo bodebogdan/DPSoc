@@ -86,29 +86,33 @@ void *connection_handler(void *socket_desc)
     int counter;
 
     //char *processed;
-
-    while ( (read_size = recv(sock, client_message, 2000, 0)) > 0)
-    {
-        for (counter = 0; counter < connectionIndex; counter++)
+    char client_len[1];
+    while (recv(sock, client_len, 1, 0) > 0) {
+        int c_len;
+        c_len = client_len[0];
+        while ( (read_size = recv(sock, client_message, c_len, 0)) > 0)
         {
-            if (connections[counter] != sock)
+            for (counter = 0; counter < connectionIndex; counter++)
             {
-                //processed = (char*)malloc(sizeof(char) * strlen(client_message));
-                //strcpy(processed, client_message);
+                if (connections[counter] != sock)
+                {
+                    //processed = (char*)malloc(sizeof(char) * strlen(client_message));
+                    //strcpy(processed, client_message);
 
-                printf("%s", client_message);
-                n = write(connections[counter], client_message, strlen(client_message));
-                if (n < 0) error("ERROR writing to socket");
+                    printf("%s", client_message);
+                    n = write(connections[counter], client_message, strlen(client_message));
+                    if (n < 0) error("ERROR writing to socket");
+                }
             }
-        }
 
-
-        for (counter = 0 ; counter < 2000; counter++)
-        {
-            client_message[counter] = '\0';
+            for (counter = 0 ; counter < c_len; counter++)
+            {
+                client_message[counter] = '\0';
+            }
+           // n = write(sock,"I got your message",18);
+            //if (n < 0) error("ERROR writing to socket");
+            break;
         }
-       // n = write(sock,"I got your message",18);
-        //if (n < 0) error("ERROR writing to socket");
     }
 
     if(read_size == 0)

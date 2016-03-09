@@ -177,8 +177,11 @@ void *sendmessage(void *name)
             close(sockfd);
         }
 
+        char len[1];
+        len[0] = strlen(msg);
         // Send message to server
-        write(sockfd,msg,strlen(msg));
+        write(sockfd, len, sizeof(len));
+        write(sockfd, msg, strlen(msg));
 
         // write it in chat window (top)
         mvwprintw(top,line,2,msg);
